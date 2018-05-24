@@ -1,0 +1,5 @@
+#german = {}
+#german['Subjet'] = "Thema"
+#german['Page'] = "Seite"
+#german["Please return if found"] = "Falls gefunden, bitte zuruckgeben"
+
