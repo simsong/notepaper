@@ -50,21 +50,12 @@ Spanish: <input type=checkbox name="lang"><br>
 <input type=submit value="download paper">
 </form>
 <hr>
-Download the source:
-<ul>
-<li><a href="index.cgi?source=index.cgi">index.cgi</a>
-<li><a href="index.cgi?source=notepaper.py">notepaper.py</a>
-</ul>
+<a href='https://github.com/simsong/notepaper'>[source]</a>
 <hr>
 Copyright 2006, Simson L. Garfinkel<br>
 </body>
 </html>
 """
-
-def print_source(fn):
-    print "Content-type: text/text\r\n\r\n"
-    for line in open(fn,"r"):
-        sys.stdout.write(line)
 
 def do_form():
     print "Content-Type: text/html\r\n\r\n"     # HTML is following
@@ -102,12 +93,7 @@ def make_pdf(name,font,do_summary,do_holes,lang):
 
 
 def do_cgi():
-    import tempfile
     form = cgi.FieldStorage()
-    if form.has_key("source"):
-        print_source(form.getfirst("source"))
-        sys.exit(0)
-
     if form.has_key("post"):
         pdf = make_pdf(form.getfirst("name",""),
                      form.getfirst("font","Helvectica"),
@@ -125,7 +111,6 @@ def do_cgi():
 
 if __name__ == "__main__":
     # If we are called from the CGI...
-
     if(os.getenv("REQUEST_METHOD")!=None):
         do_cgi();
         sys.exit(0)

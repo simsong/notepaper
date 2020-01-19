@@ -24,13 +24,18 @@
 # SOFTWARE.
 
 import time
+import dateimte
+import gettext
+
+_=gettext.translation('base','locales',fallback=True).gettext
+
 
 class notepaper:
     def __init__(self):
         self.name = ""                  # default name
         self.font = "Helvetica"        # default font
         self.buf = "%!\nletter\n"
-	self.lang = ""
+
     def line(self,x1,y1,x2,y2):
         self.buf += "%g %g moveto %g %g lineto stroke \n" % (x1,y1,x2,y2)
 
@@ -84,16 +89,12 @@ class notepaper:
         self.buf += "%g " % (y)       # puts Y on stack
         self.buf += "moveto (%s) show\n" % (text)
 
-    def do_name(self,font,name,y,lang):
-	if (lang):
-		page = "Hoja _____"
-		subject = "Asunto: ____________________"
-	else:
-		page = "Page _____"
-                subject	= "Subject: ____________________"
+    def do_name(self,font,name,y):
+	page    = _("Page") + ": _____"
+        subject	= _("Subject") + ":____________________"
         self.setfont(font,8)
         self.do_text(1*72+4,y,name)
-        self.do_text(1*72+4,y-8,"Please return if found")
+        self.do_text(1*72+4,y-8, _("Please return if found"))
         self.setfont(font,16)
         self.do_text(6.5*72,y-16,page)
         self.do_text(1*72+4,10.4*72,subject)    
@@ -131,15 +132,9 @@ class notepaper:
         self.buf += "%g %g %g 90 180 arc \n" % (x+r,y+height-r,r)        
         
     def do_calendar(self,font,x,y,size,width,year,month,lang):
-	if(lang):
-		days   = ("L","M","X","J","V","S","D")
-		week_start = 0
-		months = ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")
-	else:
-		days   = ("S","M","Tu","W","Th","F","S")
-		week_start = 1
-		months = ("January","February","March","April","May","June","July","August","September","October","November","December")
-        import time;
+	week_start = 1
+        days   = [datetime.date(2000,1,d).strftime("%a") for d in range(2,9)]
+        months = [datetime.date(2000,m,1).strftime("%B") for m in range(1,13)]
                 
 	if(month<1 or month>12):
             raise InvalidMonth
