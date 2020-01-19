@@ -1,7 +1,7 @@
 #
 # notepaper class, includes calendar code
 #
-# Copyright (c) 2006, Simson L. Garfinkel
+# Copyright (c) 2006,2019 Simson L. Garfinkel
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -24,13 +24,18 @@
 # SOFTWARE.
 
 import time
-import dateimte
+import datetime
 import gettext
+import subprocess
+import os
+import locale
 
-_=gettext.translation('base','locales',fallback=True).gettext
+GS = 'gs'
 
 
-class notepaper:
+
+
+class Notepaper:
     def __init__(self):
         self.name = ""                  # default name
         self.font = "Helvetica"        # default font
@@ -89,9 +94,10 @@ class notepaper:
         self.buf += "%g " % (y)       # puts Y on stack
         self.buf += "moveto (%s) show\n" % (text)
 
-    def do_name(self,font,name,y):
-	page    = _("Page") + ": _____"
-        subject	= _("Subject") + ":____________________"
+    def do_name(self, font, name, y):
+        _ = gettext.translation('base','locales',fallback=True).gettext
+        page    = _("Page") + ": _____"
+        subject = _("Subject") + ":____________________"
         self.setfont(font,8)
         self.do_text(1*72+4,y,name)
         self.do_text(1*72+4,y-8, _("Please return if found"))
@@ -131,12 +137,12 @@ class notepaper:
         # top left corner
         self.buf += "%g %g %g 90 180 arc \n" % (x+r,y+height-r,r)        
         
-    def do_calendar(self,font,x,y,size,width,year,month,lang):
-	week_start = 1
+    def do_calendar(self,font,x,y,size,width,year,month):
+        week_start = 1
         days   = [datetime.date(2000,1,d).strftime("%a") for d in range(2,9)]
         months = [datetime.date(2000,m,1).strftime("%B") for m in range(1,13)]
                 
-	if(month<1 or month>12):
+        if(month<1 or month>12):
             raise InvalidMonth
         self.setfont(font,size)
 
@@ -151,7 +157,7 @@ class notepaper:
         y -= size
 
         for i in range(0,7):
-            self.do_textRight(x+(i+1)*width,y,days[i])
+            self.do_textRight(x+(i+1)*width,y,days[i][0])
         y -= size                       # down a line
 
         if(tm < today): self.buf += "0.5 setgray "    # stuff in the past is in gray
@@ -182,8 +188,8 @@ class notepaper:
             self.make_hole(0.35 * 72, 5.5*72)
             self.make_hole(0.35 * 72, 9.75*72)
 
-        self.do_name(self.font,self.name,72-8,self.lang)
-        self.do_calendar(self.font,5.4*72,10.7*72,8,12,tm.tm_year,tm.tm_mon,self.lang)
+        self.do_name(self.font,self.name,72-8)
+        self.do_calendar(self.font,5.4*72,10.7*72,8,12,tm.tm_year,tm.tm_mon)
 
         next_month = tm.tm_mon+1
         next_year  = tm.tm_year
@@ -191,6 +197,42 @@ class notepaper:
             next_month  = 1
             next_year  += 1
 
-        self.do_calendar(self.font,6.8*72,10.7*72,8,12,next_year,next_month,self.lang)
+        self.do_calendar(self.font,6.8*72,10.7*72,8,12,next_year,next_month)
         self.done()
         return self.buf
+
+
+def make_ps(name,font,do_summary,do_holes,lang):
+    paper      = Notepaper()
+    paper.name = name
+    paper.font = font
+    paper.lang = lang
+    paper_ps   = paper.do_notepaper(do_summary,do_holes)
+    return paper_ps
+
+def make_pdf(name,font,do_summary,do_holes,lang):
+    import tempfile
+    ps_file  = tempfile.NamedTemporaryFile("w+")
+    pdf_file = tempfile.NamedTemporaryFile("wb+")
+    ps_file.write(make_ps(name,font,do_summary,do_holes,lang))
+    ps_file.flush()
+    ps_file.seek(0)
+    subprocess.check_call([GS,'-q','-dNOPAUSE',
+                           '-SOutputFile=' + pdf_file.name,
+                           '-sDEVICE=pdfwrite',
+                           '-dBATCH',
+                           ps_file.name])
+    return pdf_file
+
+if __name__=="__main__":
+    import argparse
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--debug",action="store_true",help="write results to STDOUT")
+    parser.add_argument("--lang", help="Specify language (for testing)", default='en')
+    parser.add_argument("filename", help="Specify output file")
+    args = parser.parse_args()
+    os.environ['LANGUAGE']=args.lang
+    locale.setlocale(locale.LC_ALL, args.lang)
+    pdf_file = make_pdf(args.filename, "Helvetica", True, True, lang=args.lang)
+    pdf_file.seek(0)
+    open(args.filename,"wb").write(pdf_file.read())

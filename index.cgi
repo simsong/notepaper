@@ -29,8 +29,6 @@ import notepaper
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-gs_path = '/usr/bin/gs'
-
 cgiform = """
 <html>
 <head>
@@ -68,28 +66,6 @@ def debug(info="looks ok"):
     print "Content-type: text/text\r\n\r\n"
     print info
     sys.exit(0)
-
-
-def make_ps(name,font,do_summary,do_holes,lang):
-    paper      = notepaper.notepaper()
-    paper.name = name
-    paper.font = font
-    paper.lang = lang
-    paper_ps   = paper.do_notepaper(do_summary,do_holes)
-    return paper_ps
-
-def make_pdf(name,font,do_summary,do_holes,lang):
-    import tempfile
-    ps_file  = tempfile.NamedTemporaryFile("w+")
-    pdf_file = tempfile.NamedTemporaryFile("w+")
-    ps_file.write(make_ps(name,font,do_summary,do_holes,lang))
-    ps_file.flush()
-    ps_file.seek(0)
-    cmd = gs_path + " -q -dNOPAUSE -SOutputFile=" + pdf_file.name + \
-          " -sDEVICE=pdfwrite -dBATCH " + ps_file.name
-    os.system(cmd);
-    pdf_file.seek(0);
-    return pdf_file.read()
 
 
 def do_cgi():
