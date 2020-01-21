@@ -32,9 +32,6 @@ import locale
 
 GS = 'gs'
 
-
-
-
 class Notepaper:
     def __init__(self):
         self.name = ""                  # default name

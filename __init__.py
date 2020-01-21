@@ -13,12 +13,6 @@ import bottle
 """This is the WSGI driver for notepaper.
 """
 
-def debug(info="looks ok"):
-    print("Content-type: text/text\r\n\r\n")
-    print(info)
-    sys.exit(0)
-
-
 def do_cgi():
     form = cgi.FieldStorage()
     if "post" in form and False:
