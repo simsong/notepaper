@@ -1,36 +1,33 @@
 <html>
-<head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<title>Simson Garfinkel's Notepaper Generator</title>
-<link rel="stylesheet" href="notepaper.css" type="text/css">
-</head>
-<body>
-<h1>Simson Garfinkel's Notepaper Generator</h1>
-<form action="index.cgi" method=post>
-<input type=hidden name="post" value="value">
-Name: <input type=text size=50 length=50 name="name" value="Simson L. Garfinkel <simsong@acm.org>"> <br>
-Font: <input type=text length=30 name="font" value="Helvetica"> <br>
-Display Summary Box: <input type=checkbox name="do_summary"><br>
-Display Punch Holes: <input type=checkbox name="do_holes"><br>
-<div class="language-picker js-language-picker">
-  <form action="" class="language-picker__form">
-    <label for="language-picker-select">Select your language: </label>
-    <select name="language-picker-select" id="language-picker-select">
-      <option lang="de" value="deutsch">Deutsch</option>
-      <option lang="en" value="english" selected>English</option>
-      <option lang="es" value="español">Español</option>
-      <option lang="fr" value="francais">Français</option>
-      <option lang="it" value="italiano">Italiano</option>
-    </select>
-  </form>
-</div>
-
-<input type=submit value="download paper">
-</form>
-<hr>
-<p><a href='https://github.com/simsong/notepaper'><i>source on github.com</i></a></p>
-<p>Copyright © 2006, 2020, Simson L. Garfinkel</p>
-</body>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Simson Garfinkel's Notepaper Generator</title>
+    <link rel="stylesheet" href="notepaper.css" type="text/css">
+  </head>
+  <body>
+    <h1>Simson Garfinkel's Notepaper Generator</h1>
+    <form action="./notepaper" method='get'>
+      <input type=hidden name="post" value="value">
+      Name: <input type=text size=50 length=50 name="name" value="Simson L. Garfinkel <simsong@acm.org>"> <br>
+      Font: <input type=text length=30 name="font" value="Helvetica"> <br>
+      Display Summary Box: <input type=checkbox name="do_summary"><br>
+      Display Punch Holes: <input type=checkbox name="do_holes"><br>
+      <div class="language-picker js-language-picker">
+	<label for="lang">Select your language: </label>
+	<select name="lang" id="lang">
+	  <option value="de">Deutsch</option>
+	  <option value="en" selected>English</option>
+	  <option value="es">Español</option>
+	  <option value="fr">Français</option>
+	  <option value="it">Italiano</option>
+	</select>
+      </div>
+      <input type='submit' value="download paper">
+    </form>
+    <hr>
+    <p><a href='https://github.com/simsong/notepaper'><i>source on github.com</i></a></p>
+    <p>Copyright © 2006, 2020, Simson L. Garfinkel</p>
+  </body>
 </html>
 
 
