@@ -126,6 +126,8 @@ class Notepaper:
         COLS   = 7
         COL_MARGIN = 6          # between columns, and between columns and edge
         COL_WIDTH  = (WIDTH-(COL_MARGIN*(COLS+1)))/COLS
+        import holidays.holidays
+        us_holidays = holidays.holidays.US()
 
         def liney(n):
             return y+self.LINE_HEIGHT*n
@@ -147,20 +149,24 @@ class Notepaper:
         self.pdf.set_draw_color(100,255,255)
         self.pdf.rect(x, liney(line), WIDTH, self.LINE_HEIGHT, style='F')
         for i in range(0,7):
-            self.text( col_start(i), liney(line), COL_WIDTH, day_name(i+2)[0], align='C' )
+            self.text( col_start(i), liney(line), COL_WIDTH, day_name(i+2)[0], align='R' )
         
         line  += 1               # start on the second line
         day   = datetime.date(year=when.year, month=when.month, day=1) # iterator
         today = datetime.date.today() # today
         while day.month == when.month:
             weekday = day.weekday()
+            col = ( weekday + 1 ) % 7
+            if day in us_holidays:
+                self.pdf.set_fill_color(200,200,255)
+                self.pdf.rect( col_start( col ), liney(line), COL_WIDTH, self.LINE_HEIGHT, style='F')
             if day < today:
                 self.pdf.set_text_color(128,128,128)
             elif day == today:
                 self.pdf.set_text_color(255,0,0)
             else:
                 self.pdf.set_text_color(0,0,0)
-            self.text( col_start( (weekday+1)%7 ), liney(line), COL_WIDTH, str(day.day), align='R')
+            self.text( col_start( col ), liney(line), COL_WIDTH, str(day.day), align='R')
             if day.weekday()==5: # if sat, go to next line
                 line += 1
             day += datetime.timedelta(days=1)
@@ -192,11 +198,11 @@ class Notepaper:
 
         # Do this month calendar
         today = datetime.date.today()
-        self.do_calendar( 5.4*72, 0, today)
+        self.do_calendar( 5*72, 0, today)
         this_month = today.month
         while today.month==this_month:
             today = today + datetime.timedelta(days=1)
-        self.do_calendar( 7.0*72, 0, today)
+        self.do_calendar( 6.5*72, 0, today)
 
 
 def make_pdf(name,font,do_summary,do_holes,lang):
