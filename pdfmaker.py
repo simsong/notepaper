@@ -175,7 +175,7 @@ class Notepaper:
         localdir = os.path.join( os.path.dirname(__file__), 'locales')
         _ = gettext.translation('base',localdir,fallback=True).gettext
 
-        self.make_lines(1*72,1*72,8.5*72,9.76*72,16)
+        self.make_lines(1*72,1.5*72,8.5*72,9.76*72,16)
 
         if do_summary:
             self.do_roundbox(5*72,6*72,4*72,5*72)
@@ -198,11 +198,11 @@ class Notepaper:
 
         # Do this month calendar
         today = datetime.date.today()
-        self.do_calendar( 5*72, 0, today)
+        self.do_calendar( 5*72, 24, today)
         this_month = today.month
         while today.month==this_month:
             today = today + datetime.timedelta(days=1)
-        self.do_calendar( 6.5*72, 0, today)
+        self.do_calendar( 6.5*72, 24, today)
 
 
 def make_pdf(name,font,do_summary,do_holes,lang):
