@@ -1,10 +1,10 @@
-test:
-	python3 notepaper.py out.pdf ; open out.pdf
-
 test-en:
 	python3 pdfmaker.py out.pdf --lang en --holes
 	mv out.pdf $(HOME)/simson.net/out.pdf
 
+test-mac:
+	python3 pdfmaker.py out.pdf --lang en
+	open out.pdf
 
 test-es:
 	python3 notepaper.py out.pdf --lang es_ES.UTF-8 ; open out.pdf

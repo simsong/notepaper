@@ -1,3 +1,6 @@
 [submodule "pyfpdf"]
 	path = pyfpdf
 	url = https://github.com/reingart/pyfpdf.git
+[submodule "python-holidays"]
+	path = holidays
+	url = https://github.com/dr-prodigy/python-holidays.git

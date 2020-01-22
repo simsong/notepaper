@@ -39,6 +39,7 @@ import logging
 from pyfpdf.fpdf import FPDF
 
 class Notepaper:
+    LINE_HEIGHT = 10
     def __init__(self):
         self.name = ""                  # default name
         self.font = "Helvetica"        # default font
@@ -69,20 +70,17 @@ class Notepaper:
     def stroke(self,gray):
         self.buf += "%f setgray stroke\n" % (gray)
 
-    def do_text(self,x,y,text):
-        self.pdf.set_xy(x, y)
-        self.pdf.cell(0, 0, text)
-
-    def do_textRight(self,x,y,text):
-        self.pdf.set_xy(x, y)
-        self.pdf.cell(0, 0, text, align='R')
-
     def fill(self,gray):
         self.buf += "%f setgray fill\n" % (gray)
 
-    def do_textCenter(self,x,y,text):
+    def text(self, x, y, width, txt, *, border=0, align='L'):
+        """@param (x,y) - upper-left corner of the box.
+        width - width of the box; if 0, goes to the right margin.
+        txt   - the text.
+        align - L,R,C within the box.
+        """
         self.pdf.set_xy(x, y)
-        self.pdf.cell(0, 0, text, align='C')
+        self.pdf.cell( width, self.LINE_HEIGHT, txt, border=border, align=align)
 
     #
     # round box needs to be drawn counter-clockwise
@@ -117,48 +115,60 @@ class Notepaper:
         # top left corner
         self.buf += "%g %g %g 90 180 arc \n" % (x+r,y+height-r,r)        
         
-    def do_calendar(self,x,y,size,width,year,month):
-        week_start = 1
-        days   = [datetime.date(2000,1,d).strftime("%a") for d in range(2,9)]
-        months = [datetime.date(2000,m,1).strftime("%B") for m in range(1,13)]
-                
-        if(month<1 or month>12):
-            raise InvalidMonth
-        self.set_font(family=font, size=size)
+    def do_calendar(self, x, y, when):
+        """
+        @param x,y - upper-left corner of the calendear in points
+        @param when - calender for which we are making
+        """
+        WIDTH  = 1.3 * 72
+        LINES  = 7              # 0 - month year | 1 - SMTWTFS | 2, 3, 4 5, 6 = weeks
+        HEIGHT = self.LINE_HEIGHT * 6
+        COLS   = 7
+        COL_MARGIN = 6          # between columns, and between columns and edge
+        COL_WIDTH  = (WIDTH-(COL_MARGIN*(COLS+1)))/COLS
 
-        self.buf += "0.8 setgray %g %g %g %g rectfill 0 setgray " \
-                    % (x,y-(size+1),width*7+4,size-1)
-
-
-        t   = time.mktime((year,month,1,0,0,0,0,0,0))
-        tm  = time.localtime(t)
-        today = time.localtime(time.time())
-        self.do_textCenter(x+width*4,y,"%s %d" % (months[month-1],year))
-        y -= size
-
-        for i in range(0,7):
-            self.do_textRight(x+(i+1)*width,y,days[i][0])
-        y -= size                       # down a line
-
-        if tm < today:
-            self.buf += "0.5 setgray "    # stuff in the past is in gray
-        while(tm.tm_mon == month):
-            day = (tm.tm_wday+week_start) % 7    # tm_wday==0 for Monday
-
-            if(tm.tm_mon == today.tm_mon and (tm.tm_mday == today.tm_mday)):
-                self.buf += "0 setgray " # today and on is black
-
-            self.do_textRight(x+(1+day)*width,y,"%d" % tm.tm_mday)
-            if day==6:
-                y -= size               # We were Saturday; go to next line
-            t += 60*60*24;
-            tm = time.localtime(t)      # get the day
+        def liney(n):
+            return y+self.LINE_HEIGHT*n
+        def col_start(n):
+            assert 0 <= n <= 6
+            return x + COL_MARGIN + n*(COL_WIDTH+COL_MARGIN)
+        def day_name(d):
+            return datetime.date(2000,1,d).strftime("%a")
         
+        self.pdf.set_font(family=self.font, style='', size=8 )
+
+        # First draw the month name
+        line = 0
+        self.text( x, liney(line), WIDTH, when.strftime("%B %Y"), align='C' )
+        line += 1
+
+        # Now the grey bar with the day names
+        self.pdf.set_fill_color(100,255,255)
+        self.pdf.set_draw_color(100,255,255)
+        self.pdf.rect(x, liney(line), WIDTH, self.LINE_HEIGHT, style='F')
+        for i in range(0,7):
+            self.text( col_start(i), liney(line), COL_WIDTH, day_name(i+2)[0], align='C' )
+        
+        line  += 1               # start on the second line
+        day   = datetime.date(year=when.year, month=when.month, day=1) # iterator
+        today = datetime.date.today() # today
+        while day.month == when.month:
+            weekday = day.weekday()
+            if day < today:
+                self.pdf.set_text_color(128,128,128)
+            elif day == today:
+                self.pdf.set_text_color(255,0,0)
+            else:
+                self.pdf.set_text_color(0,0,0)
+            self.text( col_start( (weekday+1)%7 ), liney(line), COL_WIDTH, str(day.day), align='R')
+            if day.weekday()==5: # if sat, go to next line
+                line += 1
+            day += datetime.timedelta(days=1)
+
     def do_notepaper(self, do_summary, do_holes):
         localdir = os.path.join( os.path.dirname(__file__), 'locales')
         _ = gettext.translation('base',localdir,fallback=True).gettext
 
-        tm = time.localtime(time.time())
         self.make_lines(1*72,1*72,8.5*72,9.76*72,14)
 
         if(do_summary):
@@ -173,22 +183,20 @@ class Notepaper:
             self.make_hole(0.35 * 72, 9.75*72)
 
         self.pdf.set_font(family=self.font, style='', size=8)
-        self.do_text(1*72+4, 10*72,  self.name)
-        self.do_text(1*72+4, 10*72+8, _("Please return if found"))
+        self.text(1*72+4, 10*72,  0, self.name)
+        self.text(1*72+4, 10*72+8, 0, _("Please return if found"))
 
         self.pdf.set_font(family=self.font, style='', size=16)
-        self.do_text(6.5*72, 10*72, _("Page") + ": _____")
-        self.do_text(1*72+4, 36, _("Subject") + ":____________________")
+        self.text(6.5*72, 10*72, 0, _("Page") + ": _____")
+        self.text(1*72+4, 36, 0, _("Subject") + ":____________________")
 
         # Do this month calendar
-        #self.do_calendar(self.5.4*72,10.7*72,8,12,tm.tm_year,tm.tm_mon)
-        next_month = tm.tm_mon+1
-        if next_month<13 :
-            next_year = tm.tm_year
-        else:
-            next_month  = 1
-            next_year   = tm.tm_year+1
-        #self.do_calendar(6.8*72,10.7*72,8,12,next_year,next_month)
+        today = datetime.date.today()
+        self.do_calendar( 5.4*72, 0, today)
+        this_month = today.month
+        while today.month==this_month:
+            today = today + datetime.timedelta(days=1)
+        self.do_calendar( 7.0*72, 0, today)
 
 
 def make_pdf(name,font,do_summary,do_holes,lang):
