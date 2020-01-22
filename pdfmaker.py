@@ -157,9 +157,9 @@ class Notepaper:
         while day.month == when.month:
             weekday = day.weekday()
             col = ( weekday + 1 ) % 7
-            if day in us_holidays:
+            if (day in us_holidays):
                 self.pdf.set_fill_color(200,200,255)
-                self.pdf.rect( col_start( col ), liney(line), COL_WIDTH, self.LINE_HEIGHT, style='F')
+                self.pdf.rect( col_start( col ) - COL_WIDTH, liney(line), COL_WIDTH*1.5, self.LINE_HEIGHT, style='F')
             if day < today:
                 self.pdf.set_text_color(128,128,128)
             elif day == today:
@@ -175,15 +175,15 @@ class Notepaper:
         localdir = os.path.join( os.path.dirname(__file__), 'locales')
         _ = gettext.translation('base',localdir,fallback=True).gettext
 
-        self.make_lines(1*72,1*72,8.5*72,9.76*72,14)
+        self.make_lines(1*72,1*72,8.5*72,9.76*72,16)
 
-        if(do_summary):
+        if do_summary:
             self.do_roundbox(5*72,6*72,4*72,5*72)
             self.fill(1)
             self.do_roundbox(5*72,6*72,3*72,3.75*72)
             self.stroke(0)
 
-        if(do_holes):
+        if do_holes:
             self.make_hole(0.35 * 72, 1.25*72)
             self.make_hole(0.35 * 72, 5.5*72)
             self.make_hole(0.35 * 72, 9.75*72)
