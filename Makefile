@@ -1,9 +1,5 @@
-test-en:
-	python3 pdfmaker.py out.pdf --lang en --holes
-	mv out.pdf $(HOME)/simson.net/out.pdf
-
 test-mac:
-	python3 pdfmaker.py out.pdf --lang en
+	python3 pdfmaker.py out.pdf --lang en --holes --summary
 	open out.pdf
 
 test-es:

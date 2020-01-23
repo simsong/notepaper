@@ -22,5 +22,6 @@ def notepaper_app():
         bottle.request.params.get('font',"Helvectica"),
         bottle.request.params.get("do_summary",False),
         bottle.request.params.get("do_holes",False),
+        int(bottle.request.params.get("lpi",6)),
         bottle.request.params.get("lang","en"))
 

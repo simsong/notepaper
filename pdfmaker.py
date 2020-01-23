@@ -37,6 +37,7 @@ import locale
 import tempfile
 import logging
 from pyfpdf.fpdf import FPDF
+import holidays.holidays as holidays
 
 class Notepaper:
     LINE_HEIGHT = 10
@@ -65,13 +66,8 @@ class Notepaper:
         self.pdf.line(x1+2,0,x1+2,72*11)
             
     def make_hole(self,x,y):
-        self.pdf.ellipse(x, y, .125*72, .125*72, 'F')
-
-    def stroke(self,gray):
-        self.buf += "%f setgray stroke\n" % (gray)
-
-    def fill(self,gray):
-        self.buf += "%f setgray fill\n" % (gray)
+        self.pdf.set_fill_color(0)
+        self.pdf.ellipse(x, y, .25*72, .25*72, 'F')
 
     def text(self, x, y, width, txt, *, border=0, align='L'):
         """@param (x,y) - upper-left corner of the box.
@@ -82,39 +78,6 @@ class Notepaper:
         self.pdf.set_xy(x, y)
         self.pdf.cell( width, self.LINE_HEIGHT, txt, border=border, align=align)
 
-    #
-    # round box needs to be drawn counter-clockwise
-    def do_roundbox(self,x,y,width,height):
-        r = 24                  # in points
-        # Note: degrees: 0 is to the right, and degrees increase counter-clockwise
-
-        self.buf += "2 setlinewidth "
-
-        # left side
-        self.buf += "%g %g moveto %g %g lineto \n" % (x,y+height-r,x,y+r)
-
-        # lower-left corner
-        self.buf += "%g %g %g 180 270 arc \n" % (x+r,y+r,r)
-
-        # bottom line
-        self.buf += "%g %g lineto \n" % (x+width-r,y)
-
-        # lower-right corner
-
-        self.buf += "%g %g %g 270 360 arc \n" % (x+width-r,y+r,r) 
-
-        # right side
-        self.buf += "%g %g lineto  \n" % (x+width,y+height-r)
-
-        # top right corner
-        self.buf += "%g %g %g 0 90 arc  \n" % (x+width-r,y+height-r,r)        
-
-        # top
-        self.buf += "%g %g lineto \n" % (x+r,y+height)
-        
-        # top left corner
-        self.buf += "%g %g %g 90 180 arc \n" % (x+r,y+height-r,r)        
-        
     def do_calendar(self, x, y, when):
         """
         @param x,y - upper-left corner of the calendear in points
@@ -126,8 +89,7 @@ class Notepaper:
         COLS   = 7
         COL_MARGIN = 6          # between columns, and between columns and edge
         COL_WIDTH  = (WIDTH-(COL_MARGIN*(COLS+1)))/COLS
-        import holidays.holidays
-        us_holidays = holidays.holidays.US()
+        us_holidays = holidays.US()
 
         def liney(n):
             return y+self.LINE_HEIGHT*n
@@ -145,8 +107,8 @@ class Notepaper:
         line += 1
 
         # Now the grey bar with the day names
-        self.pdf.set_fill_color(100,255,255)
-        self.pdf.set_draw_color(100,255,255)
+        self.pdf.set_fill_color(230)
+        self.pdf.set_draw_color(230)
         self.pdf.rect(x, liney(line), WIDTH, self.LINE_HEIGHT, style='F')
         for i in range(0,7):
             self.text( col_start(i), liney(line), COL_WIDTH, day_name(i+2)[0], align='R' )
@@ -157,10 +119,9 @@ class Notepaper:
         while day.month == when.month:
             weekday = day.weekday()
             col = ( weekday + 1 ) % 7
-            if (day in us_holidays):
-                self.pdf.set_fill_color(200,200,255)
-                self.pdf.rect( col_start( col ) - COL_WIDTH, liney(line), COL_WIDTH*1.5, self.LINE_HEIGHT, style='F')
-            if day < today:
+            if day in us_holidays:
+                self.pdf.set_text_color(0,255,0)
+            elif day < today:
                 self.pdf.set_text_color(128,128,128)
             elif day == today:
                 self.pdf.set_text_color(255,0,0)
@@ -171,17 +132,17 @@ class Notepaper:
                 line += 1
             day += datetime.timedelta(days=1)
 
-    def do_notepaper(self, do_summary, do_holes):
+    def do_notepaper(self, do_summary, do_holes, lpi):
         localdir = os.path.join( os.path.dirname(__file__), 'locales')
         _ = gettext.translation('base',localdir,fallback=True).gettext
 
-        self.make_lines(1*72,1.5*72,8.5*72,9.76*72,16)
+        self.make_lines(1*72,1.5*72,8.5*72,9.76*72, 72/lpi)
 
         if do_summary:
-            self.do_roundbox(5*72,6*72,4*72,5*72)
-            self.fill(1)
-            self.do_roundbox(5*72,6*72,3*72,3.75*72)
-            self.stroke(0)
+            self.pdf.set_line_width(3)
+            self.pdf.set_draw_color(0)
+            self.pdf.set_fill_color(255)
+            self.pdf.rect( 5*72, 1.5*72, 3*72, 4*72, 'FD')
 
         if do_holes:
             self.make_hole(0.35 * 72, 1.25*72)
@@ -205,7 +166,7 @@ class Notepaper:
         self.do_calendar( 6.5*72, 24, today)
 
 
-def make_pdf(name,font,do_summary,do_holes,lang):
+def make_pdf(name, font, do_summary, do_holes, lpi, lang):
     if lang=='en':
         lcl = "en_US.UTF-8"
     else:
@@ -219,7 +180,7 @@ def make_pdf(name,font,do_summary,do_holes,lang):
     paper      = Notepaper()
     paper.name = name
     paper.font = font
-    paper.do_notepaper(do_summary,do_holes)
+    paper.do_notepaper(do_summary, do_holes, lpi)
     return paper.pdf.output(dest='S')
 
 
@@ -231,6 +192,8 @@ if __name__=="__main__":
     parser.add_argument("filename", help="Specify output file")
     parser.add_argument("--summary", action='store_true')
     parser.add_argument("--holes", action='store_true')
+    parser.add_argument("--lpi", type=int, help="Lines per inch", default=6)
     args = parser.parse_args()
     open(args.filename,"wb").write(
-        make_pdf("No Name", "Helvetica", args.summary, args.holes, lang=args.lang))
+        make_pdf("Simson L. Garfinkel <simsong@acm.org>",
+                 "Helvetica", args.summary, args.holes, args.lpi, lang=args.lang))
