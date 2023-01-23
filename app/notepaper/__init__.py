@@ -5,6 +5,7 @@ import sys;
 import os;
 import time, getopt, sys
 
+sys.path.append( os.path.join(os.path.dirname(__file__), "."))   # get bottle in path
 sys.path.append( os.path.join(os.path.dirname(__file__), ".."))   # get bottle in path
 
 import notepaper.pdfmaker as pdfmaker

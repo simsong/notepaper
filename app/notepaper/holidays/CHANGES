@@ -1,0 +1,265 @@
+Version 0.9.12
+==============
+
+Released December 23, 2019
+
+- Support for Nigeria (ioluwayo)
+- Support for India - Telangana (kiranbeethoju, dr-p)
+- Support for Dominican Republic (gabmartinez)
+- Support for Nicaragua (CARocha)
+- Code refactoring, bugfixes (vlt)
+- Add method to list all supported countries (fabaff)
+- Germany bugfixes (bitraten)
+- Correctly handle United Kingdom "May Day" holiday in 2020 - #219 (robfraz)
+- Hungary fixes (gypapp)
+- Chile test fixes (rpanai)
+- Italy fixes (jokerigno, sixbladeknife)
+- Other minor fixes
+
+Version 0.9.11
+==============
+
+Released July 28, 2019
+
+- Added Japanese holidays for new Emperor (kokinamura)
+- Fixed Australian Canberra day holiday (explodingdinosaurs, dr-p)
+- Added support for Estonian holidays (RaulVS14)
+- Added support for Iceland and Kenya (justinasfour04)
+- Added support for Aruba (orson1282)
+- Added support for Hong Kong (polifaces)
+- Added support for Peru (manuelvalino)
+- Switzerland fixes (spasche)
+- Croatia fix (pave121, dr-p)
+- Polish deprecation: replaced by Poland (dr-p)
+- Czech(ia) - Slovak(ia) fixes (dr-p)
+- Allow passing years to CountryHoliday (mr.shu)
+
+Version 0.9.10
+==============
+
+Released March 12, 2019
+
+- Added Lithuanian holidays support (GiedriusMauza)
+- Added Luxembourgish holidays (theFeverDog)
+- Added Russian holidays (mshinkareva)
+- Added Bulgarian holidays (pavelsof)
+- Holidays in date range (elln2)
+- German holidays updates (MrtnBckr, alexanderschulze)
+- South African holidays updates (nickyspag)
+- Australian holidays updates (itssimon)
+
+Version 0.9.9
+=============
+
+Released January 3, 2019
+
+- Magic numbers removal (elln2, dr-p)
+- Honduras support (Oscar Romero)
+- Brazil's holidays fixes (victorpluna)
+- Added provinces and holidays in Italy (krolmic, dr-p)
+- Fixed regression with German Easter and Pentecost holidays (vlt, Achimh3011)
+- Fixed Canada Holiday Calendar (justinasfour04)
+- Fixed Columbus Day in Arkansas - US (johanneshk)
+- Added Grand Final Day in Victoria - AU (isha1111)
+- Added Palm Sunday to Danish holidays (jmkjaer)
+- South Africa's holidays fixes (Gordonei)
+
+Version 0.9.8
+=============
+
+Released October 18, 2018
+
+- Added Ukraine (Anian-igor)
+- Added Croatia (fran1987)
+- Added Brazil (fcrespo82)
+
+Version 0.9.7
+=============
+
+Released September 12, 2018
+
+- Added prov/state parameters to CountryHoliday() (luto)
+- Added Python 3.7 compatibility (required dateutil >= 2.7.0)
+- Fixed German Reformationstag (adaitche, Rosi2143), various other holiday updates
+- Added Belarus (Gennady-Andreyev)
+
+Version 0.9.6
+=============
+
+Released August 1, 2018
+
+- Added India (Shaurya Uppal)
+- Fixed Canadian holidays (Canada / Dominion Day)
+- Fixed German holidays (Buß- und Bettag, Ostern, Pfingsten)
+
+Version 0.9.5
+=============
+
+Released April 23, 2018
+
+- Added Hungary (Peter Zsak)
+- Added Argentina (Emmanuel Arias)
+
+Version 0.9.4
+=============
+
+Released March 12, 2018
+
+- Added CountryHoliday(country_name) method
+- Added Switzerland with all cantons (Phil)
+- Canada holiday updates (goodfore)
+- Various inspection fixes
+- Czech deprecation: replaced by Czechia (janpipek)
+
+Version 0.9.2
+=============
+
+Released January 19, 2018
+
+- Drop support for EOL Python 2.5, 2.6, 3.2 and 3.3 (hugovk)
+- Add Finnish holidays (Ardetus)
+- Add Slovak holidays (Filip Bednárik)
+
+Version 0.9.1
+=============
+
+Released January 17, 2018
+
+- Project moved to dr-prodigy
+- Added tests for Irish calendar
+- Minor fixes and refactoring
+
+Version 0.9
+===========
+
+Released January 14, 2018 (PR merging by dr-prodigy)
+
+- Add support for Python 3.6 (dr-prodigy)
+- Add Italian holidays (dr-prodigy)
+- Add Slovenian holidays (Cvetk0)
+- Add South African holidays (nickyspag)
+- Add Belgium holidays (fb22)
+- Add French holidays (oiffrig)
+- Add Japanese holidays (kokinomura)
+- Add Polish holidays (tadeoos)
+- Add Swedish holidays (johanpalmqvist)
+- Add AU/Queensland The Ekka Show (kirpit)
+- Various fixes
+
+Version 0.8.1
+=============
+
+Released February 12, 2017
+
+- Add Norwegian holidays
+
+
+Version 0.8
+===========
+
+Released February 2, 2017
+
+- Improve United Kingdom holidays
+- Add England, Wales, Scotland
+- Add Northern Ireland, Isle of Man
+- Add Republic of Ireland
+- Fix Liberation Day (NL)
+
+
+Version 0.7
+===========
+
+Released January 12, 2017
+
+- Add holidays, extended holidays and tests for Portugal
+- Add holidays and tests for the Netherlands
+- Specify encoding when parsing for version in setup.py
+  allowing package to be installed in non-unicode locales
+
+
+Version 0.6
+===========
+
+Released November 18, 2016
+
+- Rename project from holidays.py to python-holidays
+- PyPI location `holidays` remains the same
+- Add Czech holidays
+- Add UK special holidays
+- Add ECB TARGET bank holidays
+- Add changes to Georgia state holiday names for 2016
+- Fixes to Canadian holidays
+
+
+Version 0.5
+===========
+
+Released September 5, 2016
+
+- Add support for Python 3.5
+- Add holidays and tests for Columbia, Denmark, Spain, United Kingdom
+- Fix Martin Luther King, Jr. Day in state of Georgia
+- Fix setup.py install error with non-standard sys default encoding
+
+
+Version 0.4.1
+=============
+
+Released January 5, 2016
+
+- Add federal and provincial holidays for Germany
+- Add federal holidays for Austria
+
+
+Version 0.4
+===========
+
+Released October 4, 2015
+
+- Add `append` and `get_list` methods to Holiday objects
+- Add federal and provincial holidays for Australia
+- Add federal and provincial holidays for New Zealand
+- Add state-specific holidays for all US states and territories
+- Include Dec 31st from previous year when observed New Year's Day
+- Add ability to `sum()` Holiday objects
+
+
+Version 0.3.1
+=============
+
+Released October 9, 2014
+
+- Fix pip installs when python-dateutil not already present
+
+
+Version 0.3
+===========
+
+Released September 4, 2014
+
+- Adds federal holidays for Mexico
+- Holiday objects can now be combined with the addition operator (see examples
+  in README)
+- optional parameter `default` added to get() method to make it behave the same
+  as dict.get()
+
+
+Version 0.2
+===========
+
+Released August 28, 2014
+
+- Each country is now initialized with its own individual class (see examples
+  in README). This is a backward incompatible API change.
+- Adds support for Python 3.2, 3.3, 3.4, and PyPy
+- All code now conforms to PEP8 standards
+
+
+Version 0.1
+===========
+
+Released August 1, 2014
+
+- Initial release
+- Support for Python 2.5, 2.6, 2.7
+- Includes federal and provincial holidays for Canada, United States
