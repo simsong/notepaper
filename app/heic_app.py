@@ -13,7 +13,7 @@ FORM="""
     </form>
 
 <p>Privacy policy: images are processed on server with a Python program but are never written to disk. </p>
-
+<p><a href='https://github.com/simsong/notepaper/blob/master/app/heic_app.py'>[source code for this app.]</a></p>
 </body>
 </html>
 """
